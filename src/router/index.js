@@ -1,25 +1,49 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-
 const routes = [
   {
     path: '/',
     name: 'home',
-    component: HomeView
+    component: () => import('../views/home/homeFirst')
   },
   {
-    path: '/about',
-    name: 'about',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
-    component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue')
+    path: '/shop/:id',
+    name: 'Shop',
+    component: () => import('../views/shop/Shop')
+  },
+  {
+    path: '/login',
+    name: 'Login',
+    component: () => import('../views/login/Login'),
+    berforeEnter (to, form, next) {
+      const { isLogin } = localStorage
+      isLogin ? next({ name: 'home' }) : next()
+    }
+  },
+  {
+    path: '/Register',
+    name: 'Register',
+    component: () => import('../views/register/Register'),
+    berforeEnter (to, form, next) {
+      const { isLogin } = localStorage
+      isLogin ? next({ name: 'home' }) : next()
+    }
   }
+
 ]
 
 const router = createRouter({
   history: createWebHashHistory(),
   routes
+})
+
+router.beforeEach((to, from, next) => {
+  console.log(to, from)
+  const { isLogin } = localStorage
+  const { name } = to
+  const isLoginOrRegister = (name === 'Login' || name === 'Register');
+  (isLogin || isLoginOrRegister)
+    ? next()
+    : next({ name: 'Login' })
 })
 
 export default router
