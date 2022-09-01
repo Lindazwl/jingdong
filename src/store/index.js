@@ -5,7 +5,8 @@ export default createStore({
     cartList: {
       // 第一层及是商铺的id
       // shopId: {
-      //   // 第二层是商品id
+      //  shopName:"",
+      //  productList:{
       //   productId: {
       //     // 第二层是商品内容及购物数量
       //     imgUrl: 'http://www.dell-lee.com/imgs/vue3/tomato.png',
@@ -17,6 +18,9 @@ export default createStore({
       //     count:2
       //   }
       // }
+      //   // 第二层是商品id
+
+      // }
     }
   },
   getters: {
@@ -25,16 +29,19 @@ export default createStore({
     changeCartItemInfo (state, payload) {
       const { shopId, productId, productInfo } = payload
       console.log(shopId, productId, productInfo)
+
       // 获取当前店铺商品的信息
-      const shopInfo = state.cartList[shopId] || {}
+      const shopInfo = state.cartList[shopId] || {
+        shopName: '', productList: {}
+      }
       // if (!shopInfo) {
       //   shopInfo = {}
       // }
       // 获取当前店铺产品详细的信息
-      let product = shopInfo[productId]
+      let product = shopInfo.productList[productId]
       if (!product) {
+        productInfo.count = 0
         product = productInfo
-        product.count = 0
       }
       product.count = product.count + payload.num;
       (product.count < 0) && (product.count = 0);
@@ -47,7 +54,7 @@ export default createStore({
       //   product.count = 0
       // }
 
-      shopInfo[productId] = product
+      shopInfo.productList[productId] = product
       state.cartList[shopId] = shopInfo
       console.log(state.cartList, '++++++alskdalldaskl;')
     },
@@ -70,6 +77,14 @@ export default createStore({
           product.check = true
         }
       }
+    },
+    changeShopName (state, payload) {
+      const { shopId, shopName } = payload
+      const shopInfo = state.cartList[shopId] || {
+        shopName: '', productList: {}
+      }
+      shopInfo.shopName = shopName
+      state.cartList[shopId] = shopInfo
     }
   },
   actions: {
