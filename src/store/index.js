@@ -27,8 +27,8 @@ export default createStore({
   },
   mutations: {
     changeCartItemInfo (state, payload) {
-      const { shopId, productId, productInfo } = payload
-      console.log(shopId, productId, productInfo)
+      const { shopId, productId, productInfo, shopName } = payload
+      console.log(shopId, productId, productInfo, shopName, 'asdad')
 
       // 获取当前店铺商品的信息
       const shopInfo = state.cartList[shopId] || {
@@ -60,17 +60,17 @@ export default createStore({
     },
     changeCartItemCheck (state, payload) {
       const { shopId, productId } = payload
-      const product = state.cartList[shopId][productId]
+      const product = state.cartList[shopId].productList[productId]
       product.check = !product.check
     },
 
     cleanCartProducts (state, payload) {
-      state.cartList[payload.shopId] = {}
+      state.cartList[payload.shopId].productList = {}
     },
 
     setCartItemsChecked (state, payload) {
       const { shopId } = payload
-      const products = state.cartList[shopId]
+      const products = state.cartList[shopId].productList
       if (products) {
         for (const key in products) {
           const product = products[key]

@@ -69,7 +69,7 @@ const useCartEffect = (shopId) => {
   const store = useStore()
   const cartList = store.state.cartList
   const total = computed(() => {
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     let count = 0
     if (productList) {
       for (const i in productList) {
@@ -81,7 +81,7 @@ const useCartEffect = (shopId) => {
   })
 
   const price = computed(() => {
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     let count = 0
     if (productList) {
       for (const i in productList) {
@@ -95,7 +95,7 @@ const useCartEffect = (shopId) => {
   })
 
   const allChecked = computed(() => {
-    const productList = cartList[shopId]
+    const productList = cartList[shopId]?.productList
     let result = true
     if (productList) {
       for (const i in productList) {
@@ -110,7 +110,7 @@ const useCartEffect = (shopId) => {
 
   //  获取购物车里面的商品的信息
   const productList = computed(() => {
-    const productList = cartList[shopId] || []
+    const productList = cartList[shopId]?.productList || []
     return productList
   })
 

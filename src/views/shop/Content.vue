@@ -25,7 +25,7 @@
         <div class="product__number">
           <span class="product__number__minus"
             @click="() => { changeCartItem(shopId, item._id, item, -1,shopName) }">-</span>
-          {{ cartList?.[shopId]?.[productList]?.[item._id]?.count || 0 }}
+          {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }}
           <span class="product__number__plus" @click="() => { changeCartItem(shopId, item._id, item, 1,shopName) }">+</span>
         </div>
       </div>
@@ -93,7 +93,7 @@ export default {
     }
 
     const changeCartItem = (shopId, productId, item, num, shopName) => {
-      changeCartItemInfo(shopId, productId, item, num)
+      changeCartItemInfo(shopId, productId, item, num, shopName)
       changeShopName(shopId, shopName)
     }
     return {
