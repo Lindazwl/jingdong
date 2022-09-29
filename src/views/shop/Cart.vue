@@ -1,12 +1,12 @@
 <template>
-  <div class="mask" v-if="showCart" @click="handleCartShowChange"></div>
+  <div class="mask" v-if="showCart && calculations.total >0 " @click="handleCartShowChange"></div>
   <div class='cart'>
-    <div class="product" v-if="showCart">
+    <div class="product" v-if="showCart && calculations.total > 0">
       <div class="product__header">
         <div class="product__header__all" @click="() =>setCartItemsChecked(shopId)">
            <span class="product__header__icon"
             :class="['icon iconfont',
-            allChecked? 'icon-checked':'icon-icons-']"></span>
+            calculations.allChecked? 'icon-checked':'icon-icons-']"></span>
           全选</div>
         <div class="product__header__clear">
          <span class="product__header__clear__btn" @click="()=>cleanCartProducts(shopId)">清空购物车</span>
@@ -43,14 +43,14 @@
          src="http://www.dell-lee.com/imgs/vue3/basket.png"
          @click="handleCartShowChange"
          />
-        <div class="check__icon__tag">{{ total }}</div>
+        <div class="check__icon__tag">{{ calculations.total }}</div>
       </div>
 
-      <div class="check__info">总计: <span class="check__info__price">&yen;{{ price }}</span></div>
+      <div class="check__info">总计: <span class="check__info__price">&yen;{{ calculations.price }}</span></div>
       <div class="check__btn">
-        <!-- <router-link :to="{name:'Home'}"> -->
+        <router-link :to="{path:`/OrderConfirmation/${shopId}`}">
            去结算
-        <!-- </router-link> -->
+        </router-link>
       </div>
     </div>
 
@@ -65,48 +65,71 @@ import { useCommonCartEffect } from './commonCartEffect'
 
 // 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
-  const { changeCartItemInfo } = useCommonCartEffect()
+  const { cartList, changeCartItemInfo } = useCommonCartEffect()
   const store = useStore()
-  const cartList = store.state.cartList
-  const total = computed(() => {
-    const productList = cartList[shopId]?.productList
-    let count = 0
-    if (productList) {
-      for (const i in productList) {
-        const product = productList[i]
-        count += product.count
-      }
-    }
-    return count
-  })
+  // const cartList = store.state.cartList
 
-  const price = computed(() => {
+  const calculations = computed(() => {
     const productList = cartList[shopId]?.productList
-    let count = 0
+    const result = { total: 0, price: 0, allChecked: true }
+    // let total = 0
+    // let price = 0
+    // let allChecked = true
     if (productList) {
       for (const i in productList) {
         const product = productList[i]
+        result.total += product.count
         if (product.check) {
-          count += (product.count * product.price)
+          result.price += (product.count * product.price)
         }
-      }
-    }
-    return count.toFixed(2)
-  })
-
-  const allChecked = computed(() => {
-    const productList = cartList[shopId]?.productList
-    let result = true
-    if (productList) {
-      for (const i in productList) {
-        const product = productList[i]
         if (product.count > 0 && !product.check) {
-          result = false
+          result.allChecked = false
         }
       }
     }
+    result.price = result.price.toFixed(2)
     return result
   })
+
+  // const total = computed(() => {
+  //   const productList = cartList[shopId]?.productList
+  //   let count = 0
+  //   if (productList) {
+  //     for (const i in productList) {
+  //       const product = productList[i]
+  //       count += product.count
+  //     }
+  //   }
+  //   return count
+  // })
+
+  // const price = computed(() => {
+  //   const productList = cartList[shopId]?.productList
+  //   let count = 0
+  //   if (productList) {
+  //     for (const i in productList) {
+  //       const product = productList[i]
+  //       if (product.check) {
+  //         count += (product.count * product.price)
+  //       }
+  //     }
+  //   }
+  //   return count.toFixed(2)
+  // })
+
+  // const allChecked = computed(() => {
+  //   const productList = cartList[shopId]?.productList
+  //   let result = true
+  //   if (productList) {
+  //     for (const i in productList) {
+  //       const product = productList[i]
+  //       if (product.count > 0 && !product.check) {
+  //         result = false
+  //       }
+  //     }
+  //   }
+  //   return result
+  // })
 
   //  获取购物车里面的商品的信息
   const productList = computed(() => {
@@ -129,10 +152,9 @@ const useCartEffect = (shopId) => {
   }
 
   return {
-    total,
-    price,
+
     productList,
-    allChecked,
+    calculations,
     changeCartItemInfo,
     changeCartItemCheck,
     cleanCartProducts,
@@ -162,7 +184,8 @@ export default {
     const shopId = route.params.id
 
     const {
-      total, price, productList, allChecked,
+      calculations,
+      productList,
       changeCartItemInfo,
       changeCartItemCheck,
       cleanCartProducts,
@@ -171,11 +194,9 @@ export default {
 
     const { showCart, handleCartShowChange } = toggleCartEffect()
     return {
-      total,
-      price,
+      calculations,
       shopId,
       productList,
-      allChecked,
       showCart,
       changeCartItemInfo,
       changeCartItemCheck,

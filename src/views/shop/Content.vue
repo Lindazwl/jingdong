@@ -25,7 +25,8 @@
         <div class="product__number">
           <span class="product__number__minus"
             @click="() => { changeCartItem(shopId, item._id, item, -1,shopName) }">-</span>
-          {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }}
+            {{getProductCount(shopId,item._id)}}
+          <!-- {{ cartList?.[shopId]?.productList?.[item._id]?.count || 0 }} -->
           <span class="product__number__plus" @click="() => { changeCartItem(shopId, item._id, item, 1,shopName) }">+</span>
         </div>
       </div>
@@ -76,33 +77,45 @@ const useCurrentListEffect = (currentTab, shopId) => {
   return { list }
 }
 
+// 购物车先关逻辑
+const useCartEffect = () => {
+  const store = useStore()
+  const route = useRoute()
+  const shopId = route.params.id
+  const { changeCartItemInfo, cartList } = useCommonCartEffect(shopId)
+  const changeShopName = (shopId, shopName) => {
+    store.commit('changeShopName', { shopId, shopName })
+  }
+
+  const changeCartItem = (shopId, productId, item, num, shopName) => {
+    changeCartItemInfo(shopId, productId, item, num, shopName)
+    changeShopName(shopId, shopName)
+  }
+
+  const getProductCount = (shopId, productId) => {
+    return cartList?.[shopId]?.productList?.[productId]?.count || 0
+  }
+
+  return { cartList, changeCartItem, getProductCount }
+}
+
 export default {
   name: 'Content',
   props: ['shopName'],
   setup () {
     const route = useRoute()
-    const store = useStore()
     const shopId = route.params.id
-
     const { currentTab, handleTabClick } = useTabEffect()
     const { list } = useCurrentListEffect(currentTab, shopId)
-    const { changeCartItemInfo, cartList } = useCommonCartEffect(shopId)
+    const { changeCartItem, cartList, getProductCount } = useCartEffect()
 
-    const changeShopName = (shopId, shopName) => {
-      store.commit('changeShopName', { shopId, shopName })
-    }
-
-    const changeCartItem = (shopId, productId, item, num, shopName) => {
-      changeCartItemInfo(shopId, productId, item, num, shopName)
-      changeShopName(shopId, shopName)
-    }
     return {
       list,
       categories,
       shopId,
       currentTab,
-      changeCartItemInfo,
       cartList,
+      getProductCount,
       handleTabClick,
       changeCartItem
     }
