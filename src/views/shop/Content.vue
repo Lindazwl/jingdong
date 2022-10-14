@@ -39,7 +39,7 @@ import { reactive, ref, toRefs, watchPostEffect } from 'vue'
 import { get } from '../../utils/request'
 import { useRoute } from 'vue-router'
 import { useStore } from 'vuex'
-import { useCommonCartEffect } from './commonCartEffect'
+import { useCommonCartEffect } from '../../effects/cartEffects'
 
 const categories = [
   { name: '全部商品', tab: 'all' },
